@@ -1,24 +1,24 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import * as tf from '@tensorflow/tfjs';
+import { useState, useEffect } from "react";
+import * as tf from "@tensorflow/tfjs";
 
 export default function Calculadora() {
   const [modeloActual, setModeloActual] = useState(null);
-  const [operacion, setOperacion] = useState('suma'); // 'suma' o 'resta'
-  const [valA, setValA] = useState('');
-  const [valB, setValB] = useState('');
+  const [operacion, setOperacion] = useState("suma");
+  const [valA, setValA] = useState("");
+  const [valB, setValB] = useState("");
   const [resultado, setResultado] = useState(null);
 
-  // Cargar el modelo cuando cambia la operación
   useEffect(() => {
     async function cambiarModelo() {
-      setModeloActual(null); // Resetear mientras carga
+      setModeloActual(null);
       setResultado(null);
 
-      const path = operacion === 'suma'
-        ? '/modelo_suma/model.json'
-        : '/modelo_resta/model.json';
+      const path =
+        operacion === "suma"
+          ? "/modelo_suma/model.json"
+          : "/modelo_resta/model.json";
 
       try {
         const m = await tf.loadLayersModel(path);
@@ -32,12 +32,11 @@ export default function Calculadora() {
   }, [operacion]);
 
   const calcular = async () => {
-    if (!modeloActual || valA === '' || valB === '') return;
+    if (!modeloActual || valA === "" || valB === "") return;
 
     const input = tf.tensor2d([[parseFloat(valA), parseFloat(valB)]]);
     const prediccion = modeloActual.predict(input);
     const data = await prediccion.data();
-
     setResultado(data[0].toFixed(2));
 
     input.dispose();
@@ -45,77 +44,92 @@ export default function Calculadora() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow rounded mt-10">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-purple-100 via-blue-50 to-green-50 p-6">
 
-      <h1 className="text-2xl font-bold mb-4 text-center">
-        Calculadora Neuronal
-      </h1>
+      {/* Tarjeta principal */}
+      <div className="w-full max-w-lg bg-white shadow-2xl border border-gray-300 rounded-2xl p-8">
 
-      {/* Selector de Operación */}
-      <div className="flex justify-center gap-4 mb-6">
-        <button
-          onClick={() => setOperacion('suma')}
-          className={`px-4 py-2 rounded ${
-            operacion === 'suma'
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-200'
-          }`}
-        >
-          Suma (+)
-        </button>
+        <h1 className="text-4xl font-extrabold text-center mb-6 text-purple-700">
+          🤖 Calculadora Neuronal
+        </h1>
 
-        <button
-          onClick={() => setOperacion('resta')}
-          className={`px-4 py-2 rounded ${
-            operacion === 'resta'
-              ? 'bg-red-500 text-white'
-              : 'bg-gray-200'
-          }`}
-        >
-          Resta (-)
-        </button>
-      </div>
+        {/* Selector de operación */}
+        <div className="flex justify-center gap-4 mb-8">
+          <button
+            onClick={() => setOperacion("suma")}
+            className={`px-6 py-3 rounded-xl font-bold transition-colors duration-300 ${
+              operacion === "suma"
+                ? "bg-blue-600 text-white shadow-lg scale-105"
+                : "bg-gray-100 text-blue-700 hover:bg-blue-200"
+            }`}
+          >
+            ➕ Suma
+          </button>
 
-      {/* Inputs */}
-      <div className="mb-4">
-        <label className="block mb-1 font-medium">Número A</label>
-        <input
-          type="number"
-          value={valA}
-          onChange={(e) => setValA(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-      </div>
-
-      <div className="mb-6">
-        <label className="block mb-1 font-medium">Número B</label>
-        <input
-          type="number"
-          value={valB}
-          onChange={(e) => setValB(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-      </div>
-
-      <button
-        onClick={calcular}
-        disabled={!modeloActual}
-        className={`w-full py-2 rounded mb-4 ${
-          modeloActual
-            ? 'bg-green-500 text-white'
-            : 'bg-gray-400 text-gray-200'
-        }`}
-      >
-        {modeloActual ? 'Calcular con IA' : 'Cargando Modelo...'}
-      </button>
-
-      {/* Resultado */}
-      {resultado !== null && (
-        <div className="mt-4 bg-gray-100 p-4 rounded text-center">
-          <p className="font-medium text-lg">Resultado Predicho:</p>
-          <p className="text-2xl font-bold">{resultado}</p>
+          <button
+            onClick={() => setOperacion("resta")}
+            className={`px-6 py-3 rounded-xl font-bold transition-colors duration-300 ${
+              operacion === "resta"
+                ? "bg-red-600 text-white shadow-lg scale-105"
+                : "bg-gray-100 text-red-700 hover:bg-red-200"
+            }`}
+          >
+            ➖ Resta
+          </button>
         </div>
-      )}
+
+        {/* Inputs */}
+        <div className="space-y-6">
+          <div>
+            <label className="block mb-2 font-semibold text-blue-800 text-lg">
+              Número A
+            </label>
+            <input
+              type="number"
+              value={valA}
+              onChange={(e) => setValA(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg text-gray-900"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 font-semibold text-red-800 text-lg">
+              Número B
+            </label>
+            <input
+              type="number"
+              value={valB}
+              onChange={(e) => setValB(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-lg text-gray-900"
+            />
+          </div>
+        </div>
+
+        {/* Botón */}
+        <button
+          onClick={calcular}
+          disabled={!modeloActual}
+          className={`w-full py-3 mt-8 rounded-xl text-lg font-extrabold transition-colors duration-300 ${
+            modeloActual
+              ? "bg-green-600 text-white hover:bg-green-700 shadow-lg"
+              : "bg-gray-400 text-gray-200 cursor-not-allowed"
+          }`}
+        >
+          {modeloActual ? "Calcular con IA 🤖" : "Cargando Modelo..."}
+        </button>
+
+        {/* Resultado */}
+        {resultado !== null && (
+          <div className="mt-8 p-6 bg-gradient-to-r from-yellow-100 via-yellow-200 to-yellow-100 border rounded-xl text-center shadow-inner">
+            <p className="text-xl font-semibold text-purple-800 mb-2">
+              Resultado Predicho:
+            </p>
+            <p className="text-5xl font-extrabold text-green-700">
+              {resultado}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
